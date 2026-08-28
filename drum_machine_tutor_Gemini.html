@@ -5,16 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Learn to Code: Drum Machine</title>
   <style>
-    /* --- CSS: Styling the Drum Machine ---
-      This section makes it look good. We use Flexbox to center everything 
-      and CSS transitions to make the keys "pop" when pressed.
+    /* --- 1. CSS: STYLING THE DRUM MACHINE ---
+      This section handles the visual layout. We use Flexbox to center everything 
+      and CSS transitions to make the keys smoothly "pop" when pressed.
     */
     
     body, html {
       margin: 0;
       padding: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #282c34; /* Dark background */
+      background-color: #282c34; /* A sleek dark background */
       color: white;
       height: 100vh;
       display: flex;
@@ -27,11 +27,12 @@
       margin-bottom: 50px;
       text-transform: uppercase;
       letter-spacing: 2px;
+      color: #61dafb;
     }
 
     .keys {
       display: flex;
-      gap: 15px; /* Space between keys */
+      gap: 15px; /* Adds space between the keys */
       flex-wrap: wrap;
       justify-content: center;
       max-width: 900px;
@@ -43,19 +44,19 @@
       margin: 10px;
       font-size: 1.5rem;
       padding: 20px 15px;
-      transition: all 0.07s ease; /* Smoothly animate changes */
+      transition: all 0.07s ease; /* This dictates the speed of the animation */
       width: 80px;
       text-align: center;
       background: rgba(0, 0, 0, 0.4);
       cursor: pointer;
     }
 
-    /* This class is added by JavaScript when a key is pressed. 
-      It changes the border color and scales the key up slightly.
+    /* The '.playing' class is added dynamically by JavaScript when a key is pressed. 
+      It scales the key up slightly and changes the border color to make it glow.
     */
     .key.playing {
       transform: scale(1.1);
-      border-color: #61dafb; /* React blue color for highlighting */
+      border-color: #61dafb;
       box-shadow: 0 0 15px #61dafb;
     }
 
@@ -69,7 +70,7 @@
       font-size: 0.8rem;
       text-transform: uppercase;
       letter-spacing: 1px;
-      color: #61dafb;
+      color: #aaa;
       margin-top: 10px;
       display: block;
     }
@@ -129,49 +130,54 @@
   <audio data-key="76" src="https://raw.githubusercontent.com/wesbos/JavaScript30/master/01%20-%20JavaScript%20Drum%20Kit/sounds/tink.wav"></audio>
 
   <script>
-    // Function 1: Play the sound and add the animation class
+    // Function 1: Play the sound and trigger the visual animation
     function playSound(event) {
-      // Determine the key code. Support both keyboard presses and mouse clicks.
-      // If it's a keyboard event, grab event.keyCode. If mouse click, grab a custom dataset value we'll pass.
+      // Determine the key code. This supports both keyboard presses (event.keyCode) 
+      // and mouse clicks (this.dataset.key).
       const keyCode = event.keyCode || this.dataset.key;
 
-      // Find the specific audio element and visual key div using the keyCode
+      // Find the specific <audio> and <div> elements using the keyCode
       const audio = document.querySelector(`audio[data-key="${keyCode}"]`);
       const key = document.querySelector(`.key[data-key="${keyCode}"]`);
 
-      // If there is no audio element for this key, stop the function from running
+      // If the user presses a key that doesn't have an audio element, stop running
       if (!audio) return;
 
-      // Rewind the audio to the start so you can hit it rapidly
+      // Rewind the audio to the start. Without this, if you hit a key repeatedly, 
+      // it won't play again until the first audio file finishes playing.
       audio.currentTime = 0; 
       
-      // Play the audio
+      // Play the sound
       audio.play();
 
-      // Add the 'playing' class to the visual key so it lights up (CSS handles the look)
+      // Add the 'playing' class to the visual key so it lights up
       key.classList.add('playing');
     }
 
     // Function 2: Remove the animation class once the CSS transition finishes
     function removeTransition(event) {
-      // Skip if it's not a transform event (we only care about the scale transform ending)
+      // The transition event fires for border, box-shadow, and transform. 
+      // We only need to listen for one of them to know it's done, so we pick 'transform'.
       if (event.propertyName !== 'transform') return;
       
       // 'this' refers to the key div that triggered this event. Remove the class.
       this.classList.remove('playing');
     }
 
-    // --- Setting up Event Listeners ---
+    // --- Setting up the "Listeners" ---
 
-    // 1. Listen for the end of the CSS animation to revert the keys back to normal
-    const keys = document.querySelectorAll('.key'); // Grab all elements with class "key"
+    // 1. Grab all elements with the class "key" and put them in a list
+    const keys = document.querySelectorAll('.key'); 
+    
+    // 2. Loop over each key and listen for when its CSS transition ends.
+    // When it ends, run the removeTransition function.
     keys.forEach(key => key.addEventListener('transitionend', removeTransition));
 
-    // 2. Listen for Keyboard presses
-    window.addEventListener('keydown', playSound);
-
-    // 3. Listen for Mouse clicks on the buttons (bonus feature!)
+    // 3. Listen for mouse clicks on the buttons (bonus feature!)
     keys.forEach(key => key.addEventListener('click', playSound));
+
+    // 4. Listen for Keyboard presses on the entire window
+    window.addEventListener('keydown', playSound);
 
   </script>
 </body>
