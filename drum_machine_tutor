@@ -1,0 +1,924 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <!-- Makes the page work nicely on phones -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>BeatLab - Learn HTML CSS JS</title>
+
+
+    <!-- =====================================================
+         CSS
+         CSS controls HOW THE WEBSITE LOOKS
+         ===================================================== -->
+
+    <style>
+
+        /* Remove default browser spacing */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: white;
+            min-height: 100vh;
+        }
+
+        /* ---------- Header ---------- */
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #7c3aed, #db2777);
+        }
+
+        header h1 {
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: #fce7f3;
+        }
+
+
+        /* ---------- Main container ---------- */
+
+        .container {
+            width: min(900px, 92%);
+            margin: 40px auto;
+        }
+
+
+        /* ---------- Drum machine ---------- */
+
+        .machine {
+            background: #1e293b;
+            padding: 30px;
+            border-radius: 18px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        button {
+            border: none;
+            cursor: pointer;
+            border-radius: 8px;
+            padding: 12px 18px;
+            font-weight: bold;
+        }
+
+        .play {
+            background: #22c55e;
+            color: white;
+        }
+
+        .stop {
+            background: #ef4444;
+            color: white;
+        }
+
+        .clear {
+            background: #64748b;
+            color: white;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+
+        /* ---------- Tempo ---------- */
+
+        .tempo {
+            margin-bottom: 30px;
+        }
+
+        .tempo label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+        }
+
+
+        /* ---------- Sequencer ---------- */
+
+        .track {
+            display: grid;
+
+            /* Name column + 8 beat columns */
+            grid-template-columns: 100px repeat(8, 1fr);
+
+            gap: 8px;
+            margin-bottom: 12px;
+            align-items: center;
+        }
+
+        .instrument {
+            font-weight: bold;
+        }
+
+        .step {
+            aspect-ratio: 1;
+            background: #334155;
+            border-radius: 8px;
+            padding: 0;
+        }
+
+        /* A selected drum step */
+        .step.active {
+            background: #facc15;
+            box-shadow: 0 0 15px #facc15;
+        }
+
+        /* The step currently being played */
+        .step.playing {
+            outline: 3px solid white;
+        }
+
+
+        /* ---------- Lesson ---------- */
+
+        .lesson {
+            margin-top: 40px;
+            background: #f8fafc;
+            color: #1e293b;
+            padding: 30px;
+            border-radius: 18px;
+        }
+
+        .lesson h2 {
+            margin-bottom: 20px;
+        }
+
+        .lesson h3 {
+            margin-top: 20px;
+            color: #7c3aed;
+        }
+
+        .lesson p {
+            margin-top: 8px;
+        }
+
+        code {
+            background: #e2e8f0;
+            padding: 3px 7px;
+            border-radius: 5px;
+        }
+
+        .tip {
+            margin-top: 25px;
+            padding: 15px;
+            background: #fef3c7;
+            border-left: 5px solid #f59e0b;
+        }
+
+
+        /* ---------- Mobile ---------- */
+
+        @media (max-width: 600px) {
+
+            .track {
+                grid-template-columns: 70px repeat(8, 1fr);
+                gap: 4px;
+            }
+
+            .machine {
+                padding: 15px;
+            }
+
+            header h1 {
+                font-size: 32px;
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         HTML
+         HTML creates the STRUCTURE of the website
+         ===================================================== -->
+
+
+    <header>
+
+        <h1>🥁 BeatLab</h1>
+
+        <p>
+            Build a beat while learning HTML, CSS and JavaScript.
+        </p>
+
+    </header>
+
+
+    <main class="container">
+
+
+        <!-- ================= DRUM MACHINE ================= -->
+
+        <section class="machine">
+
+            <div class="controls">
+
+                <button class="play" onclick="togglePlay()">
+                    ▶ Play
+                </button>
+
+                <button class="stop" onclick="stopBeat()">
+                    ■ Stop
+                </button>
+
+                <button class="clear" onclick="clearBeat()">
+                    Clear
+                </button>
+
+            </div>
+
+
+            <!-- Tempo -->
+
+            <div class="tempo">
+
+                <label>
+                    Tempo:
+                    <strong id="tempoValue">120</strong> BPM
+                </label>
+
+                <!--
+                    This is an HTML range input.
+                    JavaScript reads its value.
+                -->
+
+                <input
+                    type="range"
+                    id="tempo"
+                    min="60"
+                    max="180"
+                    value="120"
+                    oninput="changeTempo()"
+                >
+
+            </div>
+
+
+            <!-- ================= SEQUENCER ================= -->
+
+            <!-- Kick -->
+
+            <div class="track">
+
+                <div class="instrument">
+                    🥾 Kick
+                </div>
+
+                <button class="step" onclick="toggleStep(this, 0, 0)"></button>
+                <button class="step" onclick="toggleStep(this, 0, 1)"></button>
+                <button class="step" onclick="toggleStep(this, 0, 2)"></button>
+                <button class="step" onclick="toggleStep(this, 0, 3)"></button>
+                <button class="step" onclick="toggleStep(this, 0, 4)"></button>
+                <button class="step" onclick="toggleStep(this, 0, 5)"></button>
+                <button class="step" onclick="toggleStep(this, 0, 6)"></button>
+                <button class="step" onclick="toggleStep(this, 0, 7)"></button>
+
+            </div>
+
+
+            <!-- Snare -->
+
+            <div class="track">
+
+                <div class="instrument">
+                    👏 Snare
+                </div>
+
+                <button class="step" onclick="toggleStep(this, 1, 0)"></button>
+                <button class="step" onclick="toggleStep(this, 1, 1)"></button>
+                <button class="step" onclick="toggleStep(this, 1, 2)"></button>
+                <button class="step" onclick="toggleStep(this, 1, 3)"></button>
+                <button class="step" onclick="toggleStep(this, 1, 4)"></button>
+                <button class="step" onclick="toggleStep(this, 1, 5)"></button>
+                <button class="step" onclick="toggleStep(this, 1, 6)"></button>
+                <button class="step" onclick="toggleStep(this, 1, 7)"></button>
+
+            </div>
+
+
+            <!-- Hi-hat -->
+
+            <div class="track">
+
+                <div class="instrument">
+                    🎩 Hi-Hat
+                </div>
+
+                <button class="step" onclick="toggleStep(this, 2, 0)"></button>
+                <button class="step" onclick="toggleStep(this, 2, 1)"></button>
+                <button class="step" onclick="toggleStep(this, 2, 2)"></button>
+                <button class="step" onclick="toggleStep(this, 2, 3)"></button>
+                <button class="step" onclick="toggleStep(this, 2, 4)"></button>
+                <button class="step" onclick="toggleStep(this, 2, 5)"></button>
+                <button class="step" onclick="toggleStep(this, 2, 6)"></button>
+                <button class="step" onclick="toggleStep(this, 2, 7)"></button>
+
+            </div>
+
+
+            <div style="margin-top: 25px; color: #94a3b8;">
+                Click the squares to create your beat.
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================================
+             LESSON
+             ===================================================== -->
+
+        <section class="lesson">
+
+            <h2>🎓 How This Drum Machine Works</h2>
+
+
+            <h3>1. HTML = The Structure</h3>
+
+            <p>
+                HTML creates the buttons, headings, controls
+                and sections on the page.
+            </p>
+
+            <p>
+                For example:
+            </p>
+
+            <br>
+
+            <code>
+                &lt;button&gt;Play&lt;/button&gt;
+            </code>
+
+
+            <h3>2. CSS = The Appearance</h3>
+
+            <p>
+                CSS decides what everything looks like.
+                It controls colors, spacing, sizes and layouts.
+            </p>
+
+            <p>
+                For example:
+            </p>
+
+            <br>
+
+            <code>
+                background: #22c55e;
+            </code>
+
+
+            <h3>3. JavaScript = The Behavior</h3>
+
+            <p>
+                JavaScript makes the drum machine interactive.
+                When you click a square, JavaScript changes its
+                state.
+            </p>
+
+            <br>
+
+            <code>
+                onclick="toggleStep(this, 0, 0)"
+            </code>
+
+
+            <h3>4. Arrays Store the Beat</h3>
+
+            <p>
+                JavaScript stores your drum pattern in an array.
+                Each true or false value represents whether a
+                drum should play.
+            </p>
+
+            <br>
+
+            <code>
+                [true, false, true, false]
+            </code>
+
+
+            <div class="tip">
+
+                <strong>💡 Experiment:</strong>
+
+                <p>
+                    Try changing the background color,
+                    adding another drum track, changing the
+                    number of steps, or changing the tempo range.
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+         JavaScript controls what the website DOES
+         ===================================================== -->
+
+    <script>
+
+        /*
+            Web Audio API
+
+            The browser can create sounds using JavaScript.
+            We don't need external audio files for this demo.
+        */
+
+        let audioContext;
+
+
+        /*
+            Our drum pattern.
+
+            There are 3 instruments:
+            0 = Kick
+            1 = Snare
+            2 = Hi-hat
+
+            Each instrument has 8 steps.
+        */
+
+        let pattern = [
+
+            [false, false, false, false, false, false, false, false],
+
+            [false, false, false, false, false, false, false, false],
+
+            [false, false, false, false, false, false, false, false]
+
+        ];
+
+
+        // Current position in the beat
+        let currentStep = 0;
+
+
+        // Whether the drum machine is playing
+        let playing = false;
+
+
+        // Timer used by JavaScript
+        let timer;
+
+
+        // Default tempo
+        let bpm = 120;
+
+
+
+        /* =====================================================
+           TURN A STEP ON OR OFF
+           ===================================================== */
+
+        function toggleStep(button, instrument, step) {
+
+            // Turn the step on/off
+            pattern[instrument][step] =
+                !pattern[instrument][step];
+
+
+            // Change the button visually
+            button.classList.toggle("active");
+
+
+            /*
+                This is a great example of JavaScript
+                changing CSS.
+
+                JavaScript changes the class.
+                CSS decides what that class looks like.
+            */
+        }
+
+
+
+        /* =====================================================
+           PLAY / PAUSE
+           ===================================================== */
+
+        function togglePlay() {
+
+            if (playing) {
+
+                stopBeat();
+
+            } else {
+
+                startBeat();
+
+            }
+
+        }
+
+
+
+        /* =====================================================
+           START THE DRUM MACHINE
+           ===================================================== */
+
+        function startBeat() {
+
+            /*
+                Browsers require the AudioContext to be started
+                after the user interacts with the page.
+            */
+
+            if (!audioContext) {
+
+                audioContext =
+                    new (window.AudioContext ||
+                    window.webkitAudioContext)();
+
+            }
+
+
+            playing = true;
+
+
+            playStep();
+
+
+            /*
+                60000 milliseconds = 1 minute.
+
+                Dividing by BPM gives the duration of a beat.
+            */
+
+            const interval = 60000 / bpm / 2;
+
+
+            timer = setInterval(playStep, interval);
+
+        }
+
+
+
+        /* =====================================================
+           STOP
+           ===================================================== */
+
+        function stopBeat() {
+
+            playing = false;
+
+            clearInterval(timer);
+
+            currentStep = 0;
+
+            removePlayingIndicators();
+
+        }
+
+
+
+        /* =====================================================
+           PLAY ONE STEP
+           ===================================================== */
+
+        function playStep() {
+
+            removePlayingIndicators();
+
+
+            /*
+                Find every button in the sequencer.
+            */
+
+            const buttons =
+                document.querySelectorAll(".step");
+
+
+            /*
+                Each row contains 8 buttons.
+
+                0-7 = Kick
+                8-15 = Snare
+                16-23 = Hi-hat
+            */
+
+            buttons.forEach((button, index) => {
+
+                if (index % 8 === currentStep) {
+
+                    button.classList.add("playing");
+
+                }
+
+            });
+
+
+            // Play Kick
+            if (pattern[0][currentStep]) {
+
+                playKick();
+
+            }
+
+
+            // Play Snare
+            if (pattern[1][currentStep]) {
+
+                playSnare();
+
+            }
+
+
+            // Play Hi-hat
+            if (pattern[2][currentStep]) {
+
+                playHiHat();
+
+            }
+
+
+            // Move to the next step
+            currentStep++;
+
+
+            // Return to step 0 after step 7
+            if (currentStep >= 8) {
+
+                currentStep = 0;
+
+            }
+
+        }
+
+
+
+        /* =====================================================
+           REMOVE PLAYING HIGHLIGHT
+           ===================================================== */
+
+        function removePlayingIndicators() {
+
+            document
+                .querySelectorAll(".step")
+                .forEach(button => {
+
+                    button.classList.remove("playing");
+
+                });
+
+        }
+
+
+
+        /* =====================================================
+           KICK SOUND
+           ===================================================== */
+
+        function playKick() {
+
+            const oscillator =
+                audioContext.createOscillator();
+
+            const gain =
+                audioContext.createGain();
+
+
+            oscillator.type = "sine";
+
+            oscillator.frequency.setValueAtTime(
+                150,
+                audioContext.currentTime
+            );
+
+            oscillator.frequency.exponentialRampToValueAtTime(
+                50,
+                audioContext.currentTime + 0.15
+            );
+
+
+            gain.gain.setValueAtTime(
+                1,
+                audioContext.currentTime
+            );
+
+            gain.gain.exponentialRampToValueAtTime(
+                0.01,
+                audioContext.currentTime + 0.15
+            );
+
+
+            oscillator.connect(gain);
+
+            gain.connect(audioContext.destination);
+
+
+            oscillator.start();
+
+            oscillator.stop(
+                audioContext.currentTime + 0.15
+            );
+
+        }
+
+
+
+        /* =====================================================
+           SNARE SOUND
+           ===================================================== */
+
+        function playSnare() {
+
+            const oscillator =
+                audioContext.createOscillator();
+
+            const gain =
+                audioContext.createGain();
+
+
+            oscillator.type = "triangle";
+
+            oscillator.frequency.value = 180;
+
+
+            gain.gain.setValueAtTime(
+                0.5,
+                audioContext.currentTime
+            );
+
+            gain.gain.exponentialRampToValueAtTime(
+                0.01,
+                audioContext.currentTime + 0.1
+            );
+
+
+            oscillator.connect(gain);
+
+            gain.connect(audioContext.destination);
+
+
+            oscillator.start();
+
+            oscillator.stop(
+                audioContext.currentTime + 0.1
+            );
+
+        }
+
+
+
+        /* =====================================================
+           HI-HAT SOUND
+           ===================================================== */
+
+        function playHiHat() {
+
+            const oscillator =
+                audioContext.createOscillator();
+
+            const gain =
+                audioContext.createGain();
+
+
+            oscillator.type = "square";
+
+            oscillator.frequency.value = 8000;
+
+
+            gain.gain.setValueAtTime(
+                0.15,
+                audioContext.currentTime
+            );
+
+            gain.gain.exponentialRampToValueAtTime(
+                0.01,
+                audioContext.currentTime + 0.05
+            );
+
+
+            oscillator.connect(gain);
+
+            gain.connect(audioContext.destination);
+
+
+            oscillator.start();
+
+            oscillator.stop(
+                audioContext.currentTime + 0.05
+            );
+
+        }
+
+
+
+        /* =====================================================
+           CHANGE TEMPO
+           ===================================================== */
+
+        function changeTempo() {
+
+            /*
+                Read the slider's value.
+            */
+
+            bpm =
+                Number(
+                    document.getElementById("tempo").value
+                );
+
+
+            /*
+                Display the new BPM.
+            */
+
+            document.getElementById("tempoValue")
+                .textContent = bpm;
+
+
+            /*
+                If the beat is playing, restart the timer
+                using the new tempo.
+            */
+
+            if (playing) {
+
+                clearInterval(timer);
+
+                const interval = 60000 / bpm / 2;
+
+                timer =
+                    setInterval(playStep, interval);
+
+            }
+
+        }
+
+
+
+        /* =====================================================
+           CLEAR THE ENTIRE BEAT
+           ===================================================== */
+
+        function clearBeat() {
+
+            /*
+                Turn every value in our pattern into false.
+            */
+
+            pattern = [
+
+                [false, false, false, false, false, false, false, false],
+
+                [false, false, false, false, false, false, false, false],
+
+                [false, false, false, false, false, false, false, false]
+
+            ];
+
+
+            /*
+                Remove the yellow color from every button.
+            */
+
+            document
+                .querySelectorAll(".step")
+                .forEach(button => {
+
+                    button.classList.remove("active");
+
+                });
+
+        }
+
+    </script>
+
+</body>
+</html>
+```
