@@ -1,4 +1,4 @@
-# sensor net demo page
+# Sensor Net Demo Page
 ## Notes
 
 
