@@ -1,42 +1,112 @@
 <!DOCTYPE html>
-<html>
+<!-- This line tells the browser "this is a modern HTML document" -->
+<html lang="en">
 <head>
-    <title>My First Website</title>
+    <!-- The <head> holds info ABOUT the page (not shown on the page itself) -->
+    <meta charset="UTF-8">
+    <title>My First HTML Page</title>
 
     <style>
+        /* This is CSS - it controls how things LOOK.
+           You could also put this in a separate .css file. */
         body {
-            font-family: Arial;
-            background-color: lightblue;
-            text-align: center;
-            padding: 50px;
+            font-family: Georgia, serif;
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 0 20px;
+            line-height: 1.6;
+            background: #fdfcf9;
+            color: #2b2b2b;
         }
-
-        h1 {
-            color: darkblue;
+        h1 { color: #b3541e; }
+        h2 { color: #4a4a4a; border-bottom: 2px solid #eee; padding-bottom: 4px; }
+        code {
+            background: #eee;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
         }
-
-        p {
-            font-size: 20px;
-        }
-
-        button {
-            background-color: blue;
-            color: white;
-            padding: 12px 24px;
-            border: none;
+        .box {
+            background: #fff3e8;
+            border: 1px solid #f0d9c0;
             border-radius: 8px;
-            cursor: pointer;
+            padding: 16px;
+            margin: 16px 0;
         }
+        button {
+            background: #b3541e;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        button:hover { background: #953f10; }
+        #output { font-weight: bold; margin-top: 10px; }
+        img { max-width: 100%; border-radius: 8px; }
     </style>
 </head>
-
 <body>
+    <!-- Everything in <body> IS shown on the page -->
 
-    <h1>Hello, World! 👋</h1>
+    <h1>Welcome to My First HTML Page</h1>
+    <p>This is a paragraph. HTML is made of <strong>elements</strong>,
+       which are usually a pair of tags like <code>&lt;p&gt;</code> and
+       <code>&lt;/p&gt;</code> wrapping some content.</p>
 
-    <p>This is my first website.</p>
+    <h2>1. Text and structure</h2>
+    <p>You can make text <strong>bold</strong>, <em>italic</em>, or
+       <a href="https://developer.mozilla.org" target="_blank">a link</a>.</p>
+    <ul>
+        <li>Unordered list item one</li>
+        <li>Unordered list item two</li>
+    </ul>
+    <ol>
+        <li>Ordered list item one</li>
+        <li>Ordered list item two</li>
+    </ol>
 
-    <button>Click Me!</button>
+    <h2>2. A box made with CSS</h2>
+    <div class="box">
+        This gray box is a <code>&lt;div&gt;</code> styled with CSS
+        (see the <code>&lt;style&gt;</code> section up in the
+        <code>&lt;head&gt;</code>).
+    </div>
+
+    <h2>3. An image</h2>
+    <img src="https://picsum.photos/600/250" alt="A random placeholder photo">
+    <p><small>(This loads a random photo from the internet, just as a demo.)</small></p>
+
+    <h2>4. Interactivity with JavaScript</h2>
+    <p>Click the button — it runs a bit of JavaScript:</p>
+    <button onclick="sayHello()">Click me</button>
+    <p id="output"></p>
+
+    <script>
+        // JavaScript makes the page DO things, not just display things.
+        function sayHello() {
+            const now = new Date().toLocaleTimeString();
+            document.getElementById("output").textContent =
+                "Hello! You clicked the button at " + now;
+        }
+    </script>
+
+    <h2>5. A simple form</h2>
+    <form onsubmit="greet(event)">
+        <label for="name">Your name: </label>
+        <input type="text" id="name" placeholder="Type here">
+        <button type="submit">Submit</button>
+    </form>
+    <p id="greeting"></p>
+
+    <script>
+        function greet(event) {
+            event.preventDefault(); // stops the page from reloading
+            const name = document.getElementById("name").value || "stranger";
+            document.getElementById("greeting").textContent = "Nice to meet you, " + name + "!";
+        }
+    </script>
 
 </body>
 </html>
